@@ -1,0 +1,363 @@
+#!/bin/bash
+
+INSTALL_DIR="/usr/share/knock"
+LOOT_DIR="$INSTALL_DIR/loot/$TARGET"
+
+# load knock config file
+if [ -f ~/.knock.conf ]; then
+  source ~/.knock.conf
+  echo -e "$OKBLUE[*] Loaded configuration file from ~/.knock.conf [$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
+else
+  cp $INSTALL_DIR/knock.conf ~/.knock.conf 2> /dev/null
+  source ~/.knock.conf
+  echo -e "$OKBLUE[*] Loaded configuration file from ~/.knock.conf [$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
+fi
+
+DISTRO=$(cat /etc/*-release | grep DISTRIB_ID= | cut -d'=' -f2)
+function help {
+  echo ""
+  echo -e "$OKGREEN         ___      ___        $RESET"
+  echo -e "$OKGREEN            \    /           $RESET"
+  echo -e "$OKGREEN         ....\||/....        $RESET"
+  echo -e "$OKGREEN        .    .  .    .       $RESET"
+  echo -e "$OKGREEN       .      ..      .      $RESET"
+  echo -e "$OKGREEN       .    0 .. 0    .      $RESET"
+  echo -e "$OKGREEN    /\/\.    .  .    ./\/\   $RESET"
+  echo -e "$OKGREEN   / / / .../|  |\... \ \ \  $RESET"
+  echo -e "$OKGREEN  / / /       \/       \ \ \ $RESET"
+  echo -e "$RESET"
+  echo -e "$OKORANGE +----=[Kn0ck By @Mils]=----+ $RESET"
+  echo ""
+  echo ' [*] NORMAL MODE'
+  echo '     knock -t <TARGET>'
+  echo ""
+  echo ' [*] NORMAL MODE + OSINT + RECON'
+  echo '     knock -t <TARGET> | -o (Osint) | -re (Recon)'
+  echo ""
+  echo ' [*] STEALTH MODE + OSINT + RECON'
+  echo '     knock -t <TARGET> | -m stealth | -o (Osint) | -re (Recon)'
+  echo ""
+  echo ' [*] DISCOVER MODE'
+  echo '     knock -t <Target> | -m discover | -w <WORSPACE_ALIAS>'
+  echo ""
+  echo ' [*] SCAN ONLY SPECIFIC PORT'
+  echo '     knock -t <TARGET> | -m port | -p <portnum>'
+  echo ""
+  echo ' [*] FULLPORTONLY SCAN MODE'
+  echo '     knock -t <TARGET> | -fp (Fullportonly)'
+  echo ""
+  echo ' [*] PORT SCAN MODE'
+  echo '     knock -t <TARGET> | -m port -p <PORT_NUM>'
+  echo ""
+  echo ' [*] WEB MODE - PORT 80 + 443 ONLY!'
+  echo '     knock -t <TARGET> | -m web'
+  echo ""
+  echo ' [*] HTTP WEB PORT MODE'
+  echo '     knock -t <TARGET> | -m webporthttp | -p <port>'
+  echo ""
+  echo ' [*] HTTPS WEB PORT MODE'
+  echo '     knock -t <TARGET> | -m webporthttps | -p <port>'
+  echo ""
+  echo ' [*] ENABLE BRUTEFORCE'
+  echo '     knock -t <TARGET> | -b (Bruteforce)'
+  echo ""
+  echo ' [*] LIST WORKSPACES'
+  echo '     knock --list'
+  echo ""
+  echo ' [*] DELETE WORKSPACE'
+  echo '     knock -w <WORKSPACE_ALIAS> -d'
+  echo ""
+  echo ' [*] DELETE HOST FROM WORKSPACE'
+  echo '     knock -w <WORKSPACE_ALIAS> -t <TARGET> -dh'
+  echo ""
+  echo ' [*] GET knock SCAN STATUS'
+  echo '     knock --status'
+  echo ""
+  echo ' [*] LOOT REIMPORT FUNCTION'
+  echo '     knock -w <WORKSPACE_ALIAS> --reimport'
+  echo ""
+  exit
+}
+
+function logo {
+  echo ""
+  echo -e "$OKGREEN         ___      ___        $RESET"
+  echo -e "$OKGREEN            \    /           $RESET"
+  echo -e "$OKGREEN         ....\||/....        $RESET"
+  echo -e "$OKGREEN        .    .  .    .       $RESET"
+  echo -e "$OKGREEN       .      ..      .      $RESET"
+  echo -e "$OKGREEN       .    0 .. 0    .      $RESET"
+  echo -e "$OKGREEN    /\/\.    .  .    ./\/\   $RESET"
+  echo -e "$OKGREEN   / / / .../|  |\... \ \ \  $RESET"
+  echo -e "$OKGREEN  / / /       \/       \ \ \ $RESET"
+  echo -e "$RESET"
+  echo -e "$OKORANGE +----=[Kn0ck By @Mils]=----+ $RESET"
+  echo ""
+}
+
+# COMMAND LINE SWITCHES
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -h|--help)
+    help
+    shift # past argument
+    ;;
+    -t|--target)
+    TARGET="$2"
+    shift # past argument
+    shift # past argument
+    ;;
+    -b|--bruteforce)
+    AUTOBRUTE="1"
+    shift # past argument
+    ;;
+    -fp|--fullportscan)
+    FULLNMAPSCAN="1"
+    shift # past argument
+    ;;
+    -o|--osint)
+    OSINT="1"
+    shift # past argument
+    ;;
+    -re|--recon)
+    RECON="1"
+    shift # past argument
+    ;;
+    -m|--mode)
+    MODE="$2"
+    shift # past argument
+    shift # past argument
+    ;;
+    -p|--port)
+    PORT="$2"
+    shift # past argument
+    shift # past argument
+    ;;
+    -f|--file)
+    FILE="$(realpath $2)"
+    shift # past argument
+    shift # past argument
+    ;;
+    --reimport)
+    REIMPORT="1"
+    shift # past argument
+    ;;
+    -ria|--reimportall)
+    REIMPORT_ALL="1"
+    shift # past argument
+    ;;
+    -n|--noreport)
+    REPORT="0"
+    shift # past argument
+    ;;
+    -nl|--noloot)
+    LOOT="0"
+    NOLOOT="1"
+    shift # past argument
+    ;;
+    -w|--workspace)
+    WORKSPACE="$2"
+    WORKSPACE_DIR="$INSTALL_DIR/loot/workspace/$WORKSPACE"
+    shift # past argument
+    shift # past argument
+    ;;
+    -d|--delete)
+    echo "Do you want to remove the workspace? $WORKSPACE_DIR"
+    read ANS 
+    rm -Rf /usr/share/knock/loot/workspace/$WORKSPACE/
+    exit
+    shift # past argument
+    ;;
+    -dh|--delete-host)
+    echo "Do you want to remove $TARGET from $WORKSPACE?"
+    read ANS 
+    sed -i "/$TARGET/d" $WORKSPACE_DIR/domains/targets-all-sorted.txt $WORKSPACE_DIR/domains/domains-all-sorted.txt $WORKSPACE_DIR/domains/targets.txt 2> /dev/null
+    rm -f $WORKSPACE_DIR/screenshots/$TARGET*.jpg 2> /dev/null
+    knock --reimport -w $WORKSPACE 
+    exit
+    shift # past argument
+    ;;
+    --list)
+    logo
+    ls -l $INSTALL_DIR/loot/workspace/
+    echo ""
+    echo "cd /usr/share/knock/loot/workspace/"
+    WORKSPACE_REPORT=$LOOT_DIR/knock-report.html
+    echo -e "$OKORANGE + -- --=[Loading workspaces...] =-- -- + $RESET"
+    $BROWSER $INSTALL_DIR/loot/workspace/ 2> /dev/null > /dev/null &
+    exit
+    shift
+    ;;
+    *) # unknown option / error option
+    POSITIONAL+=("$1")
+    echo "Unknown scan option <$POSITIONAL> refer to the help <--help> menu for usage details."
+    exit
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ -z "$TARGET" ] && [ -z "$WORKSPACE" ]; then
+  logo
+  echo "You need to specify a target or workspace to use. Type knock --help for command usage."
+  exit
+fi
+
+cd $INSTALL_DIR
+
+function init {
+  if [ ! -z $WORKSPACE_DIR ]; then
+    LOOT_DIR=$WORKSPACE_DIR
+  fi
+  echo -e "$OKBLUE[*] Saving loot to $LOOT_DIR [$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
+  mkdir -p $LOOT_DIR 2> /dev/nul
+  mkdir $LOOT_DIR/domains 2> /dev/null
+  mkdir $LOOT_DIR/ips 2> /dev/null
+  mkdir $LOOT_DIR/screenshots 2> /dev/null
+  mkdir $LOOT_DIR/nmap 2> /dev/null
+  mkdir $LOOT_DIR/reports 2> /dev/null
+  mkdir $LOOT_DIR/output 2> /dev/null
+  mkdir $LOOT_DIR/osint 2> /dev/null
+  mkdir $LOOT_DIR/credentials 2> /dev/null
+  mkdir $LOOT_DIR/web 2> /dev/null
+  mkdir $LOOT_DIR/notes 2> /dev/null
+  mkdir $LOOT_DIR/scans 2> /dev/null
+  TARGET="$(echo $TARGET | sed 's/https:\/\///g' | sed 's/http:\/\///g')"
+  /etc/init.d/metasploit start 2> /dev/null > /dev/null 2>&1 &
+  msfdb start 2> /dev/null > /dev/null
+
+  if [ "$AUTOBRUTE" == "1" ]; then
+    touch $LOOT_DIR/scans/$TARGET-autobrute.txt 2> /dev/null 
+  fi
+
+  if [ "$FULLNMAPSCAN" == "1" ]; then
+    touch $LOOT_DIR/scans/$TARGET-fullnmapscan.txt 2> /dev/null 
+  fi
+
+  if [ "$OSINT" == "1" ]; then
+    touch $LOOT_DIR/scans/$TARGET-osint.txt 2> /dev/null 
+  fi
+
+  if [ "$RECON" == "1" ]; then
+    touch $LOOT_DIR/scans/$TARGET-recon.txt 2> /dev/null 
+  fi
+}
+
+function loot {
+  echo ""
+  echo -e "$OKGREEN         ___      ___        $RESET"
+  echo -e "$OKGREEN            \    /           $RESET"
+  echo -e "$OKGREEN         ....\||/....        $RESET"
+  echo -e "$OKGREEN        .    .  .    .       $RESET"
+  echo -e "$OKGREEN       .      ..      .      $RESET"
+  echo -e "$OKGREEN       .    0 .. 0    .      $RESET"
+  echo -e "$OKGREEN    /\/\.    .  .    ./\/\   $RESET"
+  echo -e "$OKGREEN   / / / .../|  |\... \ \ \  $RESET"
+  echo -e "$OKGREEN  / / /       \/       \ \ \ $RESET"
+  echo -e "$RESET"
+  echo -e "$OKORANGE +----=[Kn0ck By @Mils]=----+ $RESET"
+  echo ""
+  if [ ! -z $WORKSPACE_DIR ]; then
+    LOOT_DIR=$WORKSPACE_DIR
+  fi
+
+  echo -e "$OKBLUE[*] Opening loot directory $LOOT_DIR [$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
+
+  cd $LOOT_DIR
+
+  if [ "$METASPLOIT_IMPORT" == "1" ]; then
+    echo -e "$OKORANGE + -- --=[Starting Metasploit Service]=-- -- + $RESET"
+    /etc/init.d/metasploit start 2> /dev/null > /dev/null
+    msfdb start
+    echo -e "$OKORANGE + -- --=[Importing NMap XML files into Metasploit]=-- -- + $RESET"
+    msfconsole -x "workspace -a $WORKSPACE; workspace $WORKSPACE; db_import $LOOT_DIR/nmap/nmap*.xml; hosts; services; exit;" | tee $LOOT_DIR/notes/msf-$WORKSPACE.txt
+  fi
+  
+  echo -e "$OKORANGE + -- --=[Generating Reports]=-- -- + $RESET"
+  cd ./output
+  echo -en "$OKGREEN[$OKBLUE"
+  for a in `ls knock-*.txt 2>/dev/null`;
+  do
+    ## TXT OUTPUT ##
+    cat "$a" 2> /dev/null | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" 2> /dev/null > $LOOT_DIR/reports/$a.txt 2> /dev/null 
+    ## HTML OUTPUT ##
+    echo "$a" 2> /dev/null | aha 2> /dev/null > $LOOT_DIR/reports/$a.html 2> /dev/null
+    cat "$a" 2> /dev/null | aha 2> /dev/null >> $LOOT_DIR/reports/$a.html 2> /dev/null
+    ## PDF OUTPUT ##
+    # Output without workspace
+    $INSTALL_DIR/bin/pyText2pdf.py -o $LOOT_DIR/reports/$a.pdf $LOOT_DIR/reports/$a.txt 2> /dev/null > /dev/null
+    # Output workspace
+    $INSTALL_DIR/bin/pyText2pdf.py -o $LOOT_DIR/workspace/$WORKSPACE/reports/report.pdf $LOOT_DIR/workspace/$WORKSPACE/reports/$a.txt 2> /dev/null > /dev/null
+    # output sending mail
+    # on progress
+    echo -n ''
+  done
+  echo -en "$OKGREEN]$RESET"
+  echo ""
+  cd ..
+  echo -e "$OKORANGE + -- --=[Sorting All Domains]=-- -- + $RESET"
+  touch $LOOT_DIR/domains/domains-all-sorted.txt 2> /dev/null
+  sort -u $LOOT_DIR/domains/*-full.txt > $LOOT_DIR/domains/domains-all-sorted.txt 2> /dev/null
+  sort -u $LOOT_DIR/domains/targets.txt > $LOOT_DIR/domains/targets-all-sorted.txt 2> /dev/null
+  diff $LOOT_DIR/domains/targets-all-sorted.txt $LOOT_DIR/domains/domains-all-sorted.txt | grep \> | awk '{print $2}' > $LOOT_DIR/domains/targets-all-unscanned.txt
+
+  #Remove blank screenshoot
+  echo -e "$OKORANGE + -- --=[Removing Blank Screenshots]=-- -- + $RESET"
+  cd $LOOT_DIR/screenshots/
+  find $LOOT_DIR/screenshots/ -type f -size -9000c -exec rm -f {} \;
+  cd $LOOT_DIR
+
+  echo -e "$OKORANGE + -- --=[Done!]=-- -- + $RESET"
+}
+
+if [ "$REIMPORT" = "1" ]; then
+  if [ ! -z "$WORKSPACE_DIR" ]; then
+    loot
+    exit
+  fi
+fi
+
+if [ "$REIMPORT_ALL" = "1" ]; then
+  if [ ! -z "$WORKSPACE_DIR" ]; then
+    sort -u $WORKSPACE_DIR/domains/targets-all-sorted.txt $WORKSPACE_DIR/domains/domains-all-sorted.txt > $WORKSPACE_DIR/scans/updated.txt
+    loot
+    exit
+  fi
+fi
+
+if [[ ${TARGET:0:1} =~ $REGEX ]];
+then
+  SCAN_TYPE="IP"
+  
+else
+  SCAN_TYPE="DOMAIN"
+fi
+
+# INITILIZE
+init
+
+# CHECK FOR BLACKARCH LINUX
+if grep -q BlackArch /etc/issue; then
+  DISTRO='blackarch'
+  echo "Detected BlackArch GNU/Linux"
+  INSTALL_DIR=$(pwd)
+  echo "Setting current path to $INSTALL_DIR"
+fi
+
+source modes/discover.sh
+source modes/flyover.sh
+source modes/fullportonly.sh
+source modes/web.sh
+source modes/webporthttp.sh
+source modes/webporthttps.sh
+source modes/stealth.sh
+source modes/airstrike.sh
+source modes/nuke.sh
+source modes/normal.sh
+
+exit 0

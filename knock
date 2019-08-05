@@ -350,14 +350,11 @@ if grep -q BlackArch /etc/issue; then
 fi
 
 source modes/discover.sh
-source modes/flyover.sh
 source modes/fullportonly.sh
 source modes/web.sh
 source modes/webporthttp.sh
 source modes/webporthttps.sh
 source modes/stealth.sh
-source modes/airstrike.sh
-source modes/nuke.sh
 source modes/normal.sh
 
 exit 0

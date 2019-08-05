@@ -119,7 +119,6 @@ knock -w <WORKSPACE_ALIAS> --reimport
 ### MODE:
 * **NORMAL:** Performs basic scan of targets and open ports using both active and passive checks for optimal performance.
 * **STEALTH:** Quickly enumerate single targets using mostly non-intrusive scans to avoid WAF/IPS blocking.
-* **AIRSTRIKE:** Quickly enumerates open ports/services on multiple hosts and performs basic fingerprinting. To use, specify the full location of the file which contains all hosts, IPs that need to be scanned and run ./knock /full/path/to/targets.txt airstrike to begin scanning.
 * **DISCOVER:** Parses all hosts on a subnet/CIDR (ie. 192.168.0.0/16) and initiates a knock scan against each host. Useful for internal network scans.
 * **PORT:** Scans a specific port for vulnerabilities. Reporting is not currently available in this mode.
 * **FULLPORTONLY:** Performs a full detailed port scan and saves results to XML.

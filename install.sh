@@ -73,9 +73,7 @@ mkdir -p $GO_DIR 2> /dev/null
 echo ""
 echo -e "$OKORANGE + -- --=[Downloading extensions...]=-- --+ $RESET"
 git clone https://github.com/1N3/BruteX.git 
-git clone https://github.com/1N3/Goohak.git  
-cp /usr/share/knock/plugins/BlackWidow/injectx.py /usr/bin/injectx.py
-pip install -r /usr/share/knock/plugins/BlackWidow/requirements.txt
+git clone https://github.com/1N3/Goohak.git
 git clone https://github.com/Dionach/CMSmap.git 
 git clone https://github.com/0xsauby/yasuo.git 
 git clone https://github.com/aboul3la/Sublist3r.git 

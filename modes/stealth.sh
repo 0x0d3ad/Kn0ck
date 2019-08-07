@@ -186,18 +186,18 @@ if [ "$MODE" = "stealth" ]; then
     #   fi
     #   curl -sX GET "http://web.archive.org/cdx/search/cdx?url=*.$TARGET/*&output=text&fl=original&collapse=urlkey" | tee $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null
     # fi
-    if [ "$BLACKWIDOW" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING ACTIVE WEB SPIDER $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      if [ "$VERBOSE" == "1" ]; then
-        echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN blackwidow -u http://$TARGET:80 -l 2 $RESET"
-      fi
-      blackwidow -u http://$TARGET:80 -l 2 -v n
-      cat /usr/share/blackwidow/$TARGET*/* > $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-      cat $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-      cat $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-    fi
+    # if [ "$BLACKWIDOW" == "1" ]; then
+    #   echo -e "${OKGREEN}=======================================${RESET}"
+    #   echo -e "$OKRED RUNNING ACTIVE WEB SPIDER $RESET"
+    #   echo -e "${OKGREEN}=======================================${RESET}"
+    #   if [ "$VERBOSE" == "1" ]; then
+    #     echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN blackwidow -u http://$TARGET:80 -l 2 $RESET"
+    #   fi
+    #   blackwidow -u http://$TARGET:80 -l 2 -v n
+    #   cat /usr/share/blackwidow/$TARGET*/* > $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
+    #   cat $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
+    #   cat $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
+    # fi
     if [ "$WEB_BRUTE" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING FILE/DIRECTORY BRUTE FORCE $RESET"

@@ -31,40 +31,6 @@ if [ "$MODE" = "webporthttp" ]; then
   echo -e "$RESET"
   echo -e "$OKORANGE +----=[Kn0ck By @Mils]=----+ $RESET"
   echo ""
-  echo -e ""
-  echo -e ""
-  echo -e "               ;               ,           "
-  echo -e "             ,;                 '.         "
-  echo -e "            ;:                   :;        "
-  echo -e "           ::                     ::       "
-  echo -e "           ::                     ::       "
-  echo -e "           ':                     :        "
-  echo -e "            :.                    :        "
-  echo -e "         ;' ::                   ::  '     "
-  echo -e "        .'  ';                   ;'  '.    "
-  echo -e "       ::    :;                 ;:    ::   "
-  echo -e "       ;      :;.             ,;:     ::   "
-  echo -e "       :;      :;:           ,;\"      ::   "
-  echo -e "       ::.      ':;  ..,.;  ;:'     ,.;:   "
-  echo -e "        \"'\"...   '::,::::: ;:   .;.;\"\"'    "
-  echo -e "            '\"\"\"....;:::::;,;.;\"\"\"         "
-  echo -e "        .:::.....'\"':::::::'\",...;::::;.   "
-  echo -e "       ;:' '\"\"'\"\";.,;:::::;.'\"\"\"\"\"\"  ':;   "
-  echo -e "      ::'         ;::;:::;::..         :;  "
-  echo -e "     ::         ,;:::::::::::;:..       :: "
-  echo -e "     ;'     ,;;:;::::::::::::::;\";..    ':."
-  echo -e "    ::     ;:\"  ::::::\"\"\"'::::::  \":     ::"
-  echo -e "     :.    ::   ::::::;  :::::::   :     ; "
-  echo -e "      ;    ::   :::::::  :::::::   :    ;  "
-  echo -e "       '   ::   ::::::....:::::'  ,:   '   "
-  echo -e "        '  ::    :::::::::::::\"   ::       "
-  echo -e "           ::     ':::::::::\"'    ::       "
-  echo -e "           ':       \"\"\"\"\"\"\"'      ::       "
-  echo -e "            ::                   ;:        "
-  echo -e "            ':;                 ;:\"        "
-  echo -e "    -hrr-     ';              ,;'          "
-  echo -e "                \"'           '\"            "
-  echo -e "                  ''''$RESET"
   echo ""
   echo "$TARGET" >> $LOOT_DIR/domains/targets.txt
   echo -e "${OKGREEN}=======================================${RESET}"
@@ -80,14 +46,14 @@ if [ "$MODE" = "webporthttp" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED CHECKING FOR WAF $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      wafw00f http://$TARGET:$PORT | tee $LOOT_DIR/web/waf-$TARGET-http-port$PORT.txt 2> /dev/null
+      wafw00f http://$TARGET/ | tee $LOOT_DIR/web/waf-$TARGET-http-port$PORT.txt 2> /dev/null
       echo ""
     fi
     if [ "$WHATWEB" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED GATHERING HTTP INFO $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      whatweb -a 3 http://$TARGET:$PORT | tee $LOOT_DIR/web/whatweb-$TARGET-http-port$PORT.raw  2> /dev/null
+      whatweb -a 3 $TARGET | tee $LOOT_DIR/web/whatweb-$TARGET-http-port$PORT.raw  2> /dev/null
       sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/whatweb-$TARGET-http-port$PORT.raw > $LOOT_DIR/web/whatweb-$TARGET-http-port$PORT.txt 2> /dev/null
       rm -f $LOOT_DIR/web/whatweb-$TARGET-http-port$PORT.raw 2> /dev/null
       echo ""
@@ -102,14 +68,14 @@ if [ "$MODE" = "webporthttp" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED CHECKING HTTP HEADERS AND METHODS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    wget -qO- -T 1 --connect-timeout=5 --read-timeout=5 --tries=1 http://$TARGET:$PORT |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-http-$TARGET-$PORT.txt 2> /dev/null
-    curl --connect-timeout 3 -I -s -R http://$TARGET:$PORT | tee $LOOT_DIR/web/headers-http-$TARGET-$PORT.txt 2> /dev/null
-    curl --connect-timeout 5 -I -s -R -L http://$TARGET:$PORT | tee $LOOT_DIR/web/websource-http-$TARGET-$PORT.txt 2> /dev/null
+    wget -qO- -T 1 --connect-timeout=5 --read-timeout=5 --tries=1 http://$TARGET/ |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-http-$TARGET-$PORT.txt 2> /dev/null
+    curl --connect-timeout 3 -I -s -R http://$TARGET/ | tee $LOOT_DIR/web/headers-http-$TARGET-$PORT.txt 2> /dev/null
+    curl --connect-timeout 5 -I -s -R -L http://$TARGET/ | tee $LOOT_DIR/web/websource-http-$TARGET-$PORT.txt 2> /dev/null
     if [ "$WEBTECH" = "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED GATHERING WEB FINGERPRINT $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      webtech -u http://$TARGET:$PORT | grep \- | cut -d- -f2- | tee $LOOT_DIR/web/webtech-$TARGET-http-port$PORT.txt
+      webtech -u http://$TARGET/ | grep \- | cut -d- -f2- | tee $LOOT_DIR/web/webtech-$TARGET-http-port$PORT.txt
     fi
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED DISPLAYING META GENERATOR TAGS $RESET"
@@ -128,19 +94,9 @@ if [ "$MODE" = "webporthttp" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED[+]$RESET Screenshot saved to $LOOT_DIR/screenshots/$TARGET-port$PORT.jpg"
     if [ ${DISTRO} == "blackarch"  ]; then
-      /bin/CutyCapt --url=http://$TARGET:$PORT --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
+      /bin/CutyCapt --url=http://$TARGET/ --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
     else
-      cutycapt --url=http://$TARGET:$PORT --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
-    fi
-    if [ "$BURP_SCAN" == "1" ]; then
-        echo -e "${OKGREEN}=======================================${RESET}"
-        echo -e "$OKRED RUNNING BURPSUITE SCAN $RESET"
-        echo -e "${OKGREEN}=======================================${RESET}"
-        if [ "$VERBOSE" == "1" ]; then
-          echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN curl -X POST \"http://$BURP_HOST:$BURP_PORT/v0.1/scan\" -d \"{\"scope\":{\"include\":[{\"rule\":\"http://$TARGET:$PORT\"}],\"type\":\"SimpleScope\"},\"urls\":[\"http://$TARGET:$PORT\"]}\"$RESET"
-        fi
-        curl -s -X POST "http://$BURP_HOST:$BURP_PORT/v0.1/scan" -d "{\"scope\":{\"include\":[{\"rule\":\"http://$TARGET:$PORT\"}],\"type\":\"SimpleScope\"},\"urls\":[\"http://$TARGET:$PORT\"]}"
-        echo ""
+      cutycapt --url=http://$TARGET/ --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
     fi
     if [ "$NMAP_SCRIPTS" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
@@ -150,44 +106,11 @@ if [ "$MODE" = "webporthttp" ]; then
       sed -r "s/</\&lh\;/g" $LOOT_DIR/output/nmap-$TARGET-port$PORT 2> /dev/null > $LOOT_DIR/output/nmap-$TARGET-port$PORT.txt 2> /dev/null
       rm -f $LOOT_DIR/output/nmap-$TARGET-port$PORT 2> /dev/null
     fi
-    if [ "$PASSIVE_SPIDER" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING PASSIVE WEB SPIDER $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2018-22-index?url=*.$TARGET&output=json" | jq -r .url | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null
-    fi
-    if [ "$WAYBACKMACHINE" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED FETCHING WAYBACK MACHINE URLS $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      curl -sX GET "http://web.archive.org/cdx/search/cdx?url=*.$TARGET/*&output=text&fl=original&collapse=urlkey" | tee $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null
-    fi
-    if [ "$BLACKWIDOW" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING ACTIVE WEB SPIDER & APPLICATION SCAN $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      blackwidow -u http://$TARGET:$PORT -l 3 -s y -v n 2> /dev/null
-      cat /usr/share/blackwidow/$TARGET*/* 2> /dev/null > $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-      cat $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-      cat $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-    fi
     if [ "$WEB_BRUTE_COMMONSCAN" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING COMMON FILE/DIRECTORY BRUTE FORCE $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_COMMON -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
-    fi
-    if [ "$WEB_BRUTE_FULLSCAN" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING FULL FILE/DIRECTORY BRUTE FORCE $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_FULL -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
-    fi
-    if [ "$WEB_BRUTE_EXPLOITSCAN" == "1" ]; then
-        echo -e "${OKGREEN}=======================================${RESET}"
-        echo -e "$OKRED RUNNING FILE/DIRECTORY BRUTE FORCE FOR VULNERABILITIES $RESET"
-        echo -e "${OKGREEN}=======================================${RESET}"
-        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_EXPLOITS -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json 
+      python3 $PLUGINS_DIR/dirsearch/dirsearch.py -b -u http://$TARGET:$PORT -w $WEB_BRUTE_COMMON -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
     fi
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* 2> /dev/null
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* > $LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
@@ -202,25 +125,15 @@ if [ "$MODE" = "webporthttp" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING CMSMAP $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      cmsmap http://$TARGET:$PORT | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTa.txt
-      echo ""
-      cmsmap http://$TARGET/wordpress/ | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTb.txt
+      cmsmap -v http://$TARGET/ | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTa.txt
       echo ""
     fi
     if [ "$WPSCAN" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING WORDPRESS VULNERABILITY SCAN $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      wpscan --url http://$TARGET:$PORT --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-http-port$PORTa.txt
+      wpscan --url http://$TARGET/ --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-http-port$PORTa.txt
       echo ""
-      wpscan --url http://$TARGET:$PORT/wordpress/ --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-http-port$PORTb.txt
-      echo ""
-    fi
-    if [ "$NIKTO" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING WEB VULNERABILITY SCAN $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      nikto -h http://$TARGET:$PORT -output $LOOT_DIR/web/nikto-$TARGET-http-port$PORT.txt
     fi
     cd $INSTALL_DIR
     if [ "$CLUSTERD" == "1" ]; then
@@ -240,7 +153,7 @@ if [ "$MODE" = "webporthttp" ]; then
       echo -e "$OKRED RUNNING JEXBOSS $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
       cd /tmp/
-      python /usr/share/knock/plugins/jexboss/jexboss.py -u http://$TARGET:$PORT | tee $LOOT_DIR/web/jexboss-$TARGET-port$PORT.raw
+      python /usr/share/knock/plugins/jexboss/jexboss.py -u http://$TARGET/ | tee $LOOT_DIR/web/jexboss-$TARGET-port$PORT.raw
       sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/jexboss-$TARGET-port$PORT.raw > $LOOT_DIR/web/jexboss-$TARGET-port$PORT.txt 2> /dev/null
       rm -f $LOOT_DIR/web/jexboss-$TARGET-port$PORT.raw 2> /dev/null
       cd $INSTALL_DIR

@@ -31,40 +31,6 @@ if [ "$MODE" = "webporthttps" ]; then
   echo -e "$RESET"
   echo -e "$OKORANGE +----=[Kn0ck By @Mils]=----+ $RESET"
   echo ""
-  echo -e ""
-  echo -e ""
-  echo -e "               ;               ,           "
-  echo -e "             ,;                 '.         "
-  echo -e "            ;:                   :;        "
-  echo -e "           ::                     ::       "
-  echo -e "           ::                     ::       "
-  echo -e "           ':                     :        "
-  echo -e "            :.                    :        "
-  echo -e "         ;' ::                   ::  '     "
-  echo -e "        .'  ';                   ;'  '.    "
-  echo -e "       ::    :;                 ;:    ::   "
-  echo -e "       ;      :;.             ,;:     ::   "
-  echo -e "       :;      :;:           ,;\"      ::   "
-  echo -e "       ::.      ':;  ..,.;  ;:'     ,.;:   "
-  echo -e "        \"'\"...   '::,::::: ;:   .;.;\"\"'    "
-  echo -e "            '\"\"\"....;:::::;,;.;\"\"\"         "
-  echo -e "        .:::.....'\"':::::::'\",...;::::;.   "
-  echo -e "       ;:' '\"\"'\"\";.,;:::::;.'\"\"\"\"\"\"  ':;   "
-  echo -e "      ::'         ;::;:::;::..         :;  "
-  echo -e "     ::         ,;:::::::::::;:..       :: "
-  echo -e "     ;'     ,;;:;::::::::::::::;\";..    ':."
-  echo -e "    ::     ;:\"  ::::::\"\"\"'::::::  \":     ::"
-  echo -e "     :.    ::   ::::::;  :::::::   :     ; "
-  echo -e "      ;    ::   :::::::  :::::::   :    ;  "
-  echo -e "       '   ::   ::::::....:::::'  ,:   '   "
-  echo -e "        '  ::    :::::::::::::\"   ::       "
-  echo -e "           ::     ':::::::::\"'    ::       "
-  echo -e "           ':       \"\"\"\"\"\"\"'      ::       "
-  echo -e "            ::                   ;:        "
-  echo -e "            ':;                 ;:\"        "
-  echo -e "    -hrr-     ';              ,;'          "
-  echo -e "                \"'           '\"            "
-  echo -e "                  ''''$RESET"
   echo ""
   echo "$TARGET" >> $LOOT_DIR/domains/targets.txt
   echo -e "${OKGREEN}=======================================${RESET}"
@@ -81,14 +47,14 @@ if [ "$MODE" = "webporthttps" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED CHECKING FOR WAF $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      wafw00f https://$TARGET:$PORT | tee $LOOT_DIR/web/waf-$TARGET-https-port$PORT.txt 2> /dev/null
+      wafw00f https://$TARGET/ | tee $LOOT_DIR/web/waf-$TARGET-https-port$PORT.txt 2> /dev/null
       echo ""
     fi
     if [ "$WHATWEB" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED GATHERING HTTP INFO $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      whatweb -a 3 https://$TARGET:$PORT | tee $LOOT_DIR/web/whatweb-$TARGET-https-port$PORT.raw  2> /dev/null
+      whatweb -a 3 https://$TARGET/ | tee $LOOT_DIR/web/whatweb-$TARGET-https-port$PORT.raw  2> /dev/null
       sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/whatweb-$TARGET-https-port$PORT.raw > $LOOT_DIR/web/whatweb-$TARGET-https-port$PORT.txt 2> /dev/null
       rm -f $LOOT_DIR/web/whatweb-$TARGET-https-port$PORT.raw 2> /dev/null
       echo ""
@@ -97,20 +63,20 @@ if [ "$MODE" = "webporthttps" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED GATHERING SERVER INFO $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      python3 $PLUGINS_DIR/wig/wig.py -d -q https://$TARGET:$PORT | tee $LOOT_DIR/web/wig-$TARGET-https-$PORT
+      python3 $PLUGINS_DIR/wig/wig.py -d -q https://$TARGET/ | tee $LOOT_DIR/web/wig-$TARGET-https-$PORT
       sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/wig-$TARGET-https-$PORT > $LOOT_DIR/web/wig-$TARGET-https-$PORT.txt 2> /dev/null
     fi
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED CHECKING HTTP HEADERS AND METHODS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    wget -qO- -T 1 --connect-timeout=5 --read-timeout=5 --tries=1 https://$TARGET:$PORT |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-https-$TARGET-$PORT.txt 2> /dev/null
-    curl --connect-timeout 5 -I -s -R https://$TARGET:$PORT | tee $LOOT_DIR/web/headers-https-$TARGET-$PORT.txt 2> /dev/null
-    curl --connect-timeout 5 -I -s -R -L https://$TARGET:$PORT | tee $LOOT_DIR/web/websource-https-$TARGET-$PORT.txt 2> /dev/null
+    wget -qO- -T 1 --connect-timeout=5 --read-timeout=5 --tries=1 https://$TARGET/ |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-https-$TARGET-$PORT.txt 2> /dev/null
+    curl --connect-timeout 5 -I -s -R https://$TARGET/ | tee $LOOT_DIR/web/headers-https-$TARGET-$PORT.txt 2> /dev/null
+    curl --connect-timeout 5 -I -s -R -L https://$TARGET/ | tee $LOOT_DIR/web/websource-https-$TARGET-$PORT.txt 2> /dev/null
     if [ "$WEBTECH" = "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED GATHERING WEB FINGERPRINT $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      webtech -u https://$TARGET:$PORT | grep \- | cut -d- -f2- | tee $LOOT_DIR/web/webtech-$TARGET-https-port$PORT.txt
+      webtech -u https://$TARGET/ | grep \- | cut -d- -f2- | tee $LOOT_DIR/web/webtech-$TARGET-https-port$PORT.txt
     fi
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED DISPLAYING META GENERATOR TAGS $RESET"
@@ -137,26 +103,16 @@ if [ "$MODE" = "webporthttps" ]; then
     echo -e "$OKRED SAVING SCREENSHOTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
     if [ ${DISTRO} == "blackarch"  ]; then
-      /bin/CutyCapt --url=https://$TARGET:$PORT --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
+      /bin/CutyCapt --url=https://$TARGET/ --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
     else
-      cutycapt --url=https://$TARGET:$PORT --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
+      cutycapt --url=https://$TARGET/ --out=$LOOT_DIR/screenshots/$TARGET-port$PORT.jpg --insecure --max-wait=5000 2> /dev/null
     fi
     echo -e "$OKRED[+]$RESET Screenshot saved to $LOOT_DIR/screenshots/$TARGET-port$PORT.jpg"
-    if [ "$BURP_SCAN" == "1" ]; then
-        echo -e "${OKGREEN}=======================================${RESET}"
-        echo -e "$OKRED RUNNING BURPSUITE SCAN $RESET"
-        echo -e "${OKGREEN}=======================================${RESET}"
-        if [ "$VERBOSE" == "1" ]; then
-          echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN curl -X POST \"http://$BURP_HOST:$BURP_PORT/v0.1/scan\" -d \"{\"scope\":{\"include\":[{\"rule\":\"https://$TARGET:$PORT\"}],\"type\":\"SimpleScope\"},\"urls\":[\"https://$TARGET:$PORT\"]}\"$RESET"
-        fi
-        curl -s -X POST "http://$BURP_HOST:$BURP_PORT/v0.1/scan" -d "{\"scope\":{\"include\":[{\"rule\":\"https://$TARGET:$PORT\"}],\"type\":\"SimpleScope\"},\"urls\":[\"https://$TARGET:$PORT\"]}"
-        echo ""
-    fi
     if [ "$NMAP_SCRIPTS" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      nmap -A -Pn -T5 -p $PORT -sV --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse --script=http-vuln* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port$PORT
+      nmap -A -Pn -T5 -p $PORT -sV -d --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse --script=http-vuln* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port$PORT
       sed -r "s/</\&lh\;/g" $LOOT_DIR/output/nmap-$TARGET-port$PORT 2> /dev/null > $LOOT_DIR/output/nmap-$TARGET-port$PORT.txt 2> /dev/null
       rm -f $LOOT_DIR/output/nmap-$TARGET-port$PORT 2> /dev/null
     fi
@@ -185,23 +141,11 @@ if [ "$MODE" = "webporthttps" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING COMMON FILE/DIRECTORY BRUTE FORCE $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u https://$TARGET:$PORT -w $WEB_BRUTE_COMMON -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
-    fi
-    if [ "$WEB_BRUTE_FULLSCAN" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING FULL FILE/DIRECTORY BRUTE FORCE $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u https://$TARGET:$PORT -w $WEB_BRUTE_FULL -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
-    fi
-    if [ "$WEB_BRUTE_EXPLOITSCAN" == "1" ]; then
-        echo -e "${OKGREEN}=======================================${RESET}"
-        echo -e "$OKRED RUNNING FILE/DIRECTORY BRUTE FORCE FOR VULNERABILITIES $RESET"
-        echo -e "${OKGREEN}=======================================${RESET}"
-        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u https://$TARGET:$PORT -w $WEB_BRUTE_EXPLOITS -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json 
+      python3 $PLUGINS_DIR/dirsearch/dirsearch.py -b -u https://$TARGET/ -w $WEB_BRUTE_COMMON -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
     fi
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* 2> /dev/null
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* > $LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
-    wget https://$TARGET:$PORT/robots.txt -O $LOOT_DIR/web/robots-$TARGET:$PORT-https.txt 2> /dev/null
+    wget https://$TARGET/robots.txt -O $LOOT_DIR/web/robots-$TARGET:$PORT-https.txt 2> /dev/null
     if [ "$CLUSTERD" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED ENUMERATING WEB SOFTWARE $RESET"
@@ -212,24 +156,17 @@ if [ "$MODE" = "webporthttps" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING CMSMAP $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      cmsmap https://$TARGET:$PORT | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTa.txt
+      cmsmap -v https://$TARGET/ | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTa.txt
       echo ""
-      cmsmap https://$TARGET:$PORT/wordpress/ | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTb.txt
+      cmsmap -v https://$TARGET/wordpress/ | tee $LOOT_DIR/web/cmsmap-$TARGET-http-port$PORTb.txt
       echo ""
     fi
     if [ "$WPSCAN" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING WORDPRESS VULNERABILITY SCAN $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      wpscan --url https://$TARGET:$PORT --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-http-port$PORTa.txt
+      wpscan --url https://$TARGET/ --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-http-port$PORTa.txt
       echo ""
-      wpscan --url https://$TARGET:$PORT/wordpress/ --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-http-port$PORTb.txt
-    fi
-    if [ "$NIKTO" == "1" ]; then
-      echo -e "${OKGREEN}=======================================${RESET}"
-      echo -e "$OKRED RUNNING WEB VULNERABILITY SCAN $RESET"
-      echo -e "${OKGREEN}=======================================${RESET}"
-      nikto -h https://$TARGET:$PORT -output $LOOT_DIR/web/nikto-$TARGET-https-port$PORT.txt
     fi
     if [ "$SHOCKER" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"

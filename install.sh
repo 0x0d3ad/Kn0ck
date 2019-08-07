@@ -49,7 +49,6 @@ apt-get install -y libssl-dev 2> /dev/null
 apt-get remove -y python3-pip
 apt-get install -y snapd
 apt-get install -y python3-pip
-pip install pyfpdf
 pip install dnspython colorama tldextract urllib3 ipaddress requests
 apt-get autoremove -y
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash

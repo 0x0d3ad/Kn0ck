@@ -89,7 +89,7 @@ pip install -r $PLUGINS_DIR/censys-subdomain-finder/requirements.txt
 pip3 install -r $PLUGINS_DIR/dnscan/requirements.txt 
 pip3 install webtech
 pip install webtech
-mv $INSTALL_DIR/bin/slurp.zip $PLUGINS_DIR
+cp $INSTALL_DIR/bin/slurp.zip $PLUGINS_DIR
 unzip slurp.zip
 
 cd ~/go/bin/; go get github.com/haccer/subjack; cp subjack /usr/local/bin/

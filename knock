@@ -70,9 +70,6 @@ function help {
   echo ' [*] DELETE HOST FROM WORKSPACE'
   echo '     knock -w <WORKSPACE_ALIAS> -t <TARGET> -dh'
   echo ""
-  echo ' [*] GET knock SCAN STATUS'
-  echo '     knock --status'
-  echo ""
   echo ' [*] LOOT REIMPORT FUNCTION'
   echo '     knock -w <WORKSPACE_ALIAS> --reimport'
   echo ""

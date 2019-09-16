@@ -1,2 +1,2 @@
 ## Knock:
-Log.
+Log, don't remove this directory!

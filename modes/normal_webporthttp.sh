@@ -3,7 +3,7 @@ if [ "$MODE" = "web" ]; then
         echo -e "${OKGREEN}=======================================${RESET}"
         echo -e "$OKRED RUNNING COMMON FILE/DIRECTORY BRUTE FORCE $RESET"
         echo -e "${OKGREEN}=======================================${RESET}"
-        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -b -u http://$TARGET -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
+        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -b -u http://$TARGET/ -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
     fi
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* 2> /dev/null
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* > $LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
@@ -12,7 +12,7 @@ if [ "$MODE" = "web" ]; then
         echo -e "${OKGREEN}=======================================${RESET}"
         echo -e "$OKRED RUNNING NMAP HTTP SCRIPTS $RESET"
         echo -e "${OKGREEN}=======================================${RESET}"
-        nmap -A -Pn -T5 -p 80 -sV -d --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse --script=http-vuln* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port80
+        nmap -sS -sC -sV -T5 -Pn -A -O -p 80 --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port80
         sed -r "s/</\&lh\;/g" $LOOT_DIR/output/nmap-$TARGET-port80 2> /dev/null > $LOOT_DIR/output/nmap-$TARGET-port80.txt 2> /dev/null
         rm -f $LOOT_DIR/output/nmap-$TARGET-port80 2> /dev/null
     fi

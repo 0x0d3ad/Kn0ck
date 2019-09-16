@@ -9,7 +9,6 @@ if [ "$MODE" = "webporthttps" ]; then
       mkdir $LOOT_DIR/domains 2> /dev/null
       mkdir $LOOT_DIR/screenshots 2> /dev/null
       mkdir $LOOT_DIR/nmap 2> /dev/null
-      mkdir $LOOT_DIR/notes 2> /dev/null
       mkdir $LOOT_DIR/reports 2> /dev/null
       mkdir $LOOT_DIR/scans 2> /dev/null
       mkdir $LOOT_DIR/output 2> /dev/null
@@ -36,7 +35,7 @@ if [ "$MODE" = "webporthttps" ]; then
   echo -e "${OKGREEN}=======================================${RESET}"
   echo -e "$OKRED RUNNING TCP PORT SCAN $RESET"
   echo -e "${OKGREEN}=======================================${RESET}"
-  nmap -sV -Pn -p $PORT --open $TARGET -oX $LOOT_DIR/nmap/nmap-https-$TARGET.xml
+  nmap -sS -sC -sV -T5 -Pn -A -O -p $PORT --open $TARGET -oX $LOOT_DIR/nmap/nmap-https-$TARGET.xml
   port_https=`grep 'portid="'$PORT'"' $LOOT_DIR/nmap/nmap-https-$TARGET.xml | grep open`
   if [ -z "$port_https" ];
   then
@@ -112,7 +111,7 @@ if [ "$MODE" = "webporthttps" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
       echo -e "${OKGREEN}=======================================${RESET}"
-      nmap -A -Pn -T5 -p $PORT -sV -d --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse --script=http-vuln* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port$PORT
+      nmap -sS -sC -sV -T5 -Pn -A -O -p $PORT --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port$PORT
       sed -r "s/</\&lh\;/g" $LOOT_DIR/output/nmap-$TARGET-port$PORT 2> /dev/null > $LOOT_DIR/output/nmap-$TARGET-port$PORT.txt 2> /dev/null
       rm -f $LOOT_DIR/output/nmap-$TARGET-port$PORT 2> /dev/null
     fi

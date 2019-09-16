@@ -23,7 +23,7 @@ if [ "$REPORT" = "1" ]; then
     args="$args -w $WORKSPACE"
   fi
   args="$args --noreport"
-  echo "knock -t $TARGET -m $MODE --noreport $args" >> $LOOT_DIR/scans/$TARGET-normal.txt
+  echo "knock -t $TARGET -fp -m $MODE --noreport $args" >> $LOOT_DIR/scans/$TARGET-normal.txt
   knock $args | tee $LOOT_DIR/output/knock-report.txt 2>&1
   exit
 fi
@@ -74,19 +74,19 @@ echo -e "${OKGREEN}=======================================${RESET}"
 echo -e "$OKRED RUNNING TCP PORT SCAN $RESET"
 echo -e "${OKGREEN}=======================================${RESET}"
 if [ "$MODE" == "web" ]; then
-  nmap -sV -T5 -Pn -p 80,443  --open $TARGET -oX $LOOT_DIR/nmap/nmap-$TARGET.xml | tee $LOOT_DIR/nmap/nmap-$TARGET.txt
+  nmap -sS -sC -sV -T5 -Pn -A -O -p 80,443  --open $TARGET -oX $LOOT_DIR/nmap/nmap-$TARGET.xml | tee $LOOT_DIR/nmap/nmap-$TARGET.txt
 elif [ ! -z "$PORT" ]; then 
-  nmap -sS -T5 -Pn -p $PORT --open $TARGET -oX $LOOT_DIR/nmap/nmap-$TARGET.xml | tee $LOOT_DIR/nmap/nmap-$TARGET.txt
+  nmap -sS -sC -sV -T5 -Pn -A -O -p $PORT --open $TARGET -oX $LOOT_DIR/nmap/nmap-$TARGET.xml | tee $LOOT_DIR/nmap/nmap-$TARGET.txt
 else
-  nmap -sS -T5 --open -Pn -p $DEFAULT_PORTS $TARGET -oX $LOOT_DIR/nmap/nmap-$TARGET.xml | tee $LOOT_DIR/nmap/nmap-$TARGET.txt
+  nmap -sS -sC -sV -T5 -Pn -A -O --open -p $DEFAULT_PORTS $TARGET -oX $LOOT_DIR/nmap/nmap-$TARGET.xml | tee $LOOT_DIR/nmap/nmap-$TARGET.txt
 fi
   echo -e "${OKGREEN}=======================================${RESET}"
   echo -e "$OKRED RUNNING UDP PORT SCAN $RESET"
   echo -e "${OKGREEN}=======================================${RESET}"
 if [ -z "$PORT" ]; then
-  nmap -Pn -sU -T4 -p$DEFAULT_UDP_PORTS --open $TARGET -oX $LOOT_DIR/nmap/nmap-udp-$TARGET.xml
+  nmap -sU -sS -sC -sV -T5 -Pn -A -O -p $DEFAULT_UDP_PORTS --open $TARGET -oX $LOOT_DIR/nmap/nmap-udp-$TARGET.xml
 else
-  nmap -Pn -sU -T4 -p$PORT --open $TARGET -oX $LOOT_DIR/nmap/nmap-udp-$TARGET.xml
+  nmap -sU -sS -sC -sV -T5 -Pn -A -O -p $PORT --open $TARGET -oX $LOOT_DIR/nmap/nmap-udp-$TARGET.xml
 fi
 
 echo ""
@@ -162,9 +162,9 @@ else
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "$OKORANGE + -- --=[Port 21 opened... running tests...$RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 21 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -sC -T5 -p 21 -d --script=ftp-* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port21.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 21 --script=ftp-* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port21.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -218,9 +218,9 @@ else
   cd $INSTALL_DIR
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 22 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -sC -T5 -d -p 22 -d --script=ssh-* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port22.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 22 --script=ssh-* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port22.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -251,9 +251,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 23 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 23 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=telnet* -p 23 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port23.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O  --script=telnet* -p 23 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port23.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -272,9 +272,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 25 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 25 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=smtp* -p 25 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port25.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=smtp* -p 25 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port25.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -293,9 +293,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 53 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 53 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=dns* -p 53 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port53.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=dns* -p 53 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port53.txt
   fi
 fi
 
@@ -306,9 +306,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 67 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 67 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sU -sV -Pn -T5 -d --script=dhcp* -p 67 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port67.txt
+    nmap -sU -sS -sC -sV -T5 -Pn -A -O --script=dhcp* -p 67 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port67.txt
   fi
 fi
 
@@ -319,9 +319,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 68 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 68 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sU -sV -Pn -T5 -d --script=dhcp* -p 68 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port68.txt
+    nmap -sU -sS -sC -sV -T5 -Pn -A -O --script=dhcp* -p 68 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port68.txt
   fi
 fi
 
@@ -332,9 +332,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 69 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 69 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sU -sV -Pn -T5 -d --script=tftp* -p 69 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port69.txt
+    nmap -sU -sS -sC -sV -T5 -Pn -A -O --script=tftp* -p 69 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port69.txt
   fi
 fi
 
@@ -345,9 +345,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 79 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 79 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=finger* -p 79 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port79.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=finger* -p 79 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port79.txt
   fi
 fi
 
@@ -426,9 +426,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 110 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 110 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV  -T5 -d --script=pop* -p 110 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port110.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=pop* -p 110 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port110.txt
   fi
 fi
 
@@ -462,9 +462,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 123 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 123 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sU -sV -Pn -T5 -d --script=ntp-* -p 123 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port123.txt
+    nmap -sU -sS -sC -sV -T5 -Pn -A -O --script=ntp-* -p 123 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port123.txt
   fi
 fi
 
@@ -481,9 +481,9 @@ else
   fi
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 135 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -p 135 -T5 -d --script=rpc* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port135.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 135 --script=rpc* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port135.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -508,9 +508,9 @@ else
   fi
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 137 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -p 137 -T5 -d --script=broadcast-netbios-master-browser* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port137.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 137 --script=broadcast-netbios-master-browser* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port137.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -538,9 +538,9 @@ else
   fi
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 139 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV  -T5 -p139 -d --script=smb-server-stats --script=smb-ls --script=smb-enum-domains --script=smb-protocols --script=smb-psexec --script=smb-enum-groups --script=smb-enum-processes --script=smb-brute --script=smb-print-text --script=smb-security-mode --script=smb-os-discovery --script=smb-enum-sessions --script=smb-mbenum --script=smb-enum-users --script=smb-enum-shares --script=smb-system-info --script=smb-vuln-ms10-054 --script=smb-vuln-ms10-061 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port139.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 139 --script=smb-server-stats --script=smb-ls --script=smb-enum-domains --script=smb-protocols --script=smb-psexec --script=smb-enum-groups --script=smb-enum-processes --script=smb-brute --script=smb-print-text --script=smb-security-mode --script=smb-os-discovery --script=smb-enum-sessions --script=smb-mbenum --script=smb-enum-users --script=smb-enum-shares --script=smb-system-info --script=smb-vuln-ms10-054 --script=smb-vuln-ms10-061 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port139.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -559,9 +559,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 161 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 161 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -d --script=/usr/share/nmap/scripts/snmp-brute.nse,/usr/share/nmap/scripts/snmp-hh3c-logins.nse,/usr/share/nmap/scripts/snmp-interfaces.nse,/usr/share/nmap/scripts/snmp-ios-config.nse,/usr/share/nmap/scripts/snmp-netstat.nse,/usr/share/nmap/scripts/snmp-processes.nse,/usr/share/nmap/scripts/snmp-sysdescr.nse,/usr/share/nmap/scripts/snmp-win32-services.nse,/usr/share/nmap/scripts/snmp-win32-shares.nse,/usr/share/nmap/scripts/snmp-win32-software.nse,/usr/share/nmap/scripts/snmp-win32-users.nse -sV -A -p 161 -sU -sT $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port161.txt
+    nmap -sU -sS -sC -sV -T5 -Pn -A -O -p 161 --script=/usr/share/nmap/scripts/snmp-brute.nse,/usr/share/nmap/scripts/snmp-hh3c-logins.nse,/usr/share/nmap/scripts/snmp-interfaces.nse,/usr/share/nmap/scripts/snmp-ios-config.nse,/usr/share/nmap/scripts/snmp-netstat.nse,/usr/share/nmap/scripts/snmp-processes.nse,/usr/share/nmap/scripts/snmp-sysdescr.nse,/usr/share/nmap/scripts/snmp-win32-services.nse,/usr/share/nmap/scripts/snmp-win32-shares.nse,/usr/share/nmap/scripts/snmp-win32-software.nse,/usr/share/nmap/scripts/snmp-win32-users.nse -sT $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port161.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -580,9 +580,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 162 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 162 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -d --script=/usr/share/nmap/scripts/snmp-brute.nse,/usr/share/nmap/scripts/snmp-hh3c-logins.nse,/usr/share/nmap/scripts/snmp-interfaces.nse,/usr/share/nmap/scripts/snmp-ios-config.nse,/usr/share/nmap/scripts/snmp-netstat.nse,/usr/share/nmap/scripts/snmp-processes.nse,/usr/share/nmap/scripts/snmp-sysdescr.nse,/usr/share/nmap/scripts/snmp-win32-services.nse,/usr/share/nmap/scripts/snmp-win32-shares.nse,/usr/share/nmap/scripts/snmp-win32-software.nse,/usr/share/nmap/scripts/snmp-win32-users.nse -sV -A -p 162 -sU -sT $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port162.txt
+    nmap -sU -sS -sC -sV -T5 -Pn -A -O -p 162 --script=/usr/share/nmap/scripts/snmp-brute.nse,/usr/share/nmap/scripts/snmp-hh3c-logins.nse,/usr/share/nmap/scripts/snmp-interfaces.nse,/usr/share/nmap/scripts/snmp-ios-config.nse,/usr/share/nmap/scripts/snmp-netstat.nse,/usr/share/nmap/scripts/snmp-processes.nse,/usr/share/nmap/scripts/snmp-sysdescr.nse,/usr/share/nmap/scripts/snmp-win32-services.nse,/usr/share/nmap/scripts/snmp-win32-shares.nse,/usr/share/nmap/scripts/snmp-win32-software.nse,/usr/share/nmap/scripts/snmp-win32-users.nse -sT $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port162.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -601,9 +601,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 389 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 389 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -p 389 -Pn -T5 -d --script=ldap* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port389.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 389 --script=ldap* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port389.txt
   fi
 fi
 
@@ -616,7 +616,7 @@ else
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED CHECKING FOR WAF $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    wafw00f https://$TARGET | tee $LOOT_DIR/web/waf-$TARGET-https.raw 2> /dev/null
+    wafw00f https://$TARGET/ | tee $LOOT_DIR/web/waf-$TARGET-https.raw 2> /dev/null
     sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/waf-$TARGET-https.raw > $LOOT_DIR/web/waf-$TARGET-https.txt 2> /dev/null
     rm -f $LOOT_DIR/web/waf-$TARGET-https.raw 2> /dev/null
     echo ""
@@ -625,7 +625,7 @@ else
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED GATHERING HTTP INFO $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    whatweb -a 3 https://$TARGET | tee $LOOT_DIR/web/whatweb-$TARGET-https.raw  2> /dev/null
+    whatweb -a 3 https://$TARGET/ | tee $LOOT_DIR/web/whatweb-$TARGET-https.raw  2> /dev/null
     sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/whatweb-$TARGET-https.raw > $LOOT_DIR/web/whatweb-$TARGET-https.txt 2> /dev/null
     rm -f $LOOT_DIR/web/whatweb-$TARGET-https.raw 2> /dev/null
   fi
@@ -636,30 +636,30 @@ else
     python3 $PLUGINS_DIR/wig/wig.py -d -q https://$TARGET | tee $LOOT_DIR/web/wig-$TARGET-https
     sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/wig-$TARGET-https > $LOOT_DIR/web/wig-$TARGET-https.txt 2> /dev/null
   fi
-  echo -e "${OKGREEN}=======================================${RESET}"
-  echo -e "$OKRED CHECKING HTTP HEADERS $RESET"
-  echo -e "${OKGREEN}=======================================${RESET}"
-  wget -qO- -T 1 --connect-timeout=5 --read-timeout=5 --tries=1 https://$TARGET |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-https-$TARGET.txt 2> /dev/null
-  curl --connect-timeout 5 -I -s -R https://$TARGET | tee $LOOT_DIR/web/headers-https-$TARGET.txt 2> /dev/null
-  curl --connect-timeout 5 -I -s -R -L https://$TARGET | tee $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null
+    echo -e "${OKGREEN}=======================================${RESET}"
+    echo -e "$OKRED CHECKING HTTP HEADERS $RESET"
+    echo -e "${OKGREEN}=======================================${RESET}"
+    wget -qO- -T 1 --connect-timeout=5 --read-timeout=5 --tries=1 https://$TARGET |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-https-$TARGET.txt 2> /dev/null
+    curl --connect-timeout 5 -I -s -R https://$TARGET | tee $LOOT_DIR/web/headers-https-$TARGET.txt 2> /dev/null
+    curl --connect-timeout 5 -I -s -R -L https://$TARGET | tee $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null
   if [ "$WEBTECH" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED GATHERING WEB FINGERPRINT $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    webtech -u https://$TARGET | grep \- | cut -d- -f2- | tee $LOOT_DIR/web/webtech-$TARGET-https.txt
+    webtech -u https://$TARGET/ | grep \- | cut -d- -f2- | tee $LOOT_DIR/web/webtech-$TARGET-https.txt
   fi
-  echo -e "${OKGREEN}=======================================${RESET}"
-  echo -e "$OKRED DISPLAYING META GENERATOR TAGS $RESET"
-  echo -e "${OKGREEN}=======================================${RESET}"
-  cat $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null | grep generator | cut -d\" -f4 2> /dev/null | tee $LOOT_DIR/web/webgenerator-https-$TARGET.txt 2> /dev/null
-  echo -e "${OKGREEN}=======================================${RESET}"
-  echo -e "$OKRED DISPLAYING COMMENTS $RESET"
-  echo -e "${OKGREEN}=======================================${RESET}"
-  cat $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null | grep "<\!\-\-" 2> /dev/null | tee $LOOT_DIR/web/webcomments-https-$TARGET.txt 2> /dev/null
-  echo -e "${OKGREEN}=======================================${RESET}"
-  echo -e "$OKRED DISPLAYING SITE LINKS $RESET"
-  echo -e "${OKGREEN}=======================================${RESET}"
-  cat $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null | egrep "\"" | cut -d\" -f2 | grep  \/ | sort -u 2> /dev/null | tee $LOOT_DIR/web/weblinks-https-$TARGET.txt 2> /dev/null
+    echo -e "${OKGREEN}=======================================${RESET}"
+    echo -e "$OKRED DISPLAYING META GENERATOR TAGS $RESET"
+    echo -e "${OKGREEN}=======================================${RESET}"
+    cat $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null | grep generator | cut -d\" -f4 2> /dev/null | tee $LOOT_DIR/web/webgenerator-https-$TARGET.txt 2> /dev/null
+    echo -e "${OKGREEN}=======================================${RESET}"
+    echo -e "$OKRED DISPLAYING COMMENTS $RESET"
+    echo -e "${OKGREEN}=======================================${RESET}"
+    cat $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null | grep "<\!\-\-" 2> /dev/null | tee $LOOT_DIR/web/webcomments-https-$TARGET.txt 2> /dev/null
+    echo -e "${OKGREEN}=======================================${RESET}"
+    echo -e "$OKRED DISPLAYING SITE LINKS $RESET"
+    echo -e "${OKGREEN}=======================================${RESET}"
+    cat $LOOT_DIR/web/websource-https-$TARGET.txt 2> /dev/null | egrep "\"" | cut -d\" -f2 | grep  \/ | sort -u 2> /dev/null | tee $LOOT_DIR/web/weblinks-https-$TARGET.txt 2> /dev/null
   if [ "$SSL" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
     echo -e "$OKRED GATHERING SSL/TLS INFO $RESET"
@@ -673,9 +673,9 @@ else
   echo -e "$OKRED SAVING SCREENSHOTS $RESET"
   echo -e "${OKGREEN}=======================================${RESET}"
   if [ ${DISTRO} == "blackarch"  ]; then
-    /bin/CutyCapt --url=https://$TARGET --out=$LOOT_DIR/screenshots/$TARGET-port443.jpg --insecure --max-wait=5000 2> /dev/null
+    /bin/CutyCapt --url=https://$TARGET/ --out=$LOOT_DIR/screenshots/$TARGET-port443.jpg --insecure --max-wait=5000 2> /dev/null
   else
-    cutycapt --url=https://$TARGET --out=$LOOT_DIR/screenshots/$TARGET-port443.jpg --insecure --max-wait=5000 2> /dev/null
+    cutycapt --url=https://$TARGET/ --out=$LOOT_DIR/screenshots/$TARGET-port443.jpg --insecure --max-wait=5000 2> /dev/null
   fi
   echo -e "$OKRED[+]$RESET Screenshot saved to $LOOT_DIR/screenshots/$TARGET-port443.jpg"
 
@@ -699,9 +699,9 @@ else
   fi
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 445 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -p445 -d --script=smb-server-stats --script=smb-ls --script=smb-enum-domains --script=smb-protocols --script=smb-psexec --script=smb-enum-groups --script=smb-enum-processes --script=smb-brute --script=smb-print-text --script=smb-security-mode --script=smb-os-discovery --script=smb-enum-sessions --script=smb-mbenum --script=smb-enum-users --script=smb-enum-shares --script=smb-system-info --script=smb-vuln-ms10-054 --script=smb-vuln-ms10-061 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port445.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 445 --script=smb-server-stats --script=smb-ls --script=smb-enum-domains --script=smb-protocols --script=smb-psexec --script=smb-enum-groups --script=smb-enum-processes --script=smb-brute --script=smb-print-text --script=smb-security-mode --script=smb-os-discovery --script=smb-enum-sessions --script=smb-mbenum --script=smb-enum-users --script=smb-enum-shares --script=smb-system-info --script=smb-vuln-ms10-054 --script=smb-vuln-ms10-061 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port445.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -728,9 +728,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 512 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 512 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d -p 512 --script=rexec* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port512.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 512 --script=rexec* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port512.txt
   fi
 fi
 
@@ -741,9 +741,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 513 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 513 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -T5 -d -Pn -p 513 --script=rlogin* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port513.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 513 --script=rlogin* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port513.txt
   fi
 fi
 
@@ -770,9 +770,9 @@ else
   fi
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 1099 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d -p 1099 --script=rmi-* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port1099.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 1099 --script=rmi-* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port1099.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -794,9 +794,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 1433 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 1433 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=ms-sql* -p 1433 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port1433.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=ms-sql* -p 1433 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port1433.txt
   fi
 fi
 
@@ -807,9 +807,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 2049 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 2049 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=nfs* -p 2049 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port2049.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=nfs* -p 2049 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port2049.txt
   fi
   if [ "$RPC_INFO" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -838,9 +838,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 3306 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 3306 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -d --script=mysql* -p 3306 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3306.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=mysql* -p 3306 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3306.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -858,10 +858,10 @@ then
 else
   echo -e "$OKORANGE + -- --=[Port 3310 opened... running tests...$RESET"
   echo -e "${OKGREEN}=======================================${RESET}"
-  echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+  echo -e "$OKRED RUNNING NMAP PORT 3310 SCRIPTS $RESET"
   echo -e "${OKGREEN}=======================================${RESET}"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
-    nmap -A -p 3310 -Pn -T5 -sV -d --script clamav-exec $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3310.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 3310 --script clamav-exec $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3310.txt
   fi
 fi
 
@@ -872,9 +872,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 3128 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 3128 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -p 3128 -Pn -T5 -sV -d  --script=*proxy* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3128.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 3128  --script=*proxy* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3128.txt
   fi
 fi
 
@@ -885,9 +885,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 3389 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 3389 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=rdp-* -p 3389 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3389.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=rdp-* -p 3389 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3389.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -910,9 +910,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 3632 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 3632 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=distcc-* -p 3632 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3632.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=distcc-* -p 3632 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port3632.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -931,9 +931,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 5432 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 5432 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -d --script=pgsql-brute -p 5432 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5432.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=pgsql-brute -p 5432 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5432.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -964,9 +964,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 5800 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 5800 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=vnc* -p 5800 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5800.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=vnc* -p 5800 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5800.txt
   fi
 fi
 
@@ -977,9 +977,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 5900 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 5900 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV  -T5 -d --script=vnc* -p 5900 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5900.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=vnc* -p 5900 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5900.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -998,9 +998,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 5984 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 5984 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=couchdb* -p 5984 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5984.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=couchdb* -p 5984 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port5984.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -1019,9 +1019,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 6000 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 6000 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=x11* -p 6000 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port6000.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=x11* -p 6000 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port6000.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -1040,9 +1040,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 6667 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 6667 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -A -sV -Pn -T5 -d --script=irc* -p 6667 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port6667.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O --script=irc* -p 6667 $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port6667.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -1061,9 +1061,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 7001 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 7001 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -sV -p 7001 -d --script=weblogic-t3-info.nse $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port7001.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 7001 --script=weblogic-t3-info.nse $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port7001.txt
   fi
   if [ "$METASPLOIT_EXPLOIT" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
@@ -1115,9 +1115,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 27017 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 27017 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -sV -p 27017 -Pn -T5 -d --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port27017.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 27017 --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port27017.txt
   fi
 fi
 
@@ -1128,9 +1128,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 27018 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 27018 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -sV  -p 27018 -Pn -T5 -d --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port27018.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 27018 --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port27018.txt
   fi
 fi
 
@@ -1141,9 +1141,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 27019 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 27019 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -sV  -p 27019 -Pn -T5 -d --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port27019.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 27019 --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port27019.txt
   fi
 fi
 
@@ -1154,9 +1154,9 @@ else
   echo -e "$OKORANGE + -- --=[Port 28017 opened... running tests...$RESET"
   if [ "$NMAP_SCRIPTS" = "1" ]; then
     echo -e "${OKGREEN}=======================================${RESET}"
-    echo -e "$OKRED RUNNING NMAP SCRIPTS $RESET"
+    echo -e "$OKRED RUNNING NMAP PORT 28017 SCRIPTS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
-    nmap -sV  -p 28017 -Pn -T5 -d --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port28017.txt
+    nmap -sS -sC -sV -T5 -Pn -A -O -p 28017 --script=mongodb* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port28017.txt
   fi
 fi
 

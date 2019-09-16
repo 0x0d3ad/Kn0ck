@@ -3,16 +3,16 @@ if [ "$MODE" = "web" ]; then
         echo -e "${OKGREEN}=======================================${RESET}"
         echo -e "$OKRED RUNNING COMMON FILE/DIRECTORY BRUTE FORCE $RESET"
         echo -e "${OKGREEN}=======================================${RESET}"
-        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -b -u https://$TARGET -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
+        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -b -u https://$TARGET/ -x 400,403,404,405,406,429,502,503,504 -F -e htm,html,asp,aspx,php,jsp,action,do,war,cfm,page,bak,cfg,sql,git,sql,txt,md,zip,jar,tar.gz,conf,swp,xml,ini,yml,cgi,pl,js,json
     fi
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* 2> /dev/null
     cat $PLUGINS_DIR/dirsearch/reports/$TARGET/* > $LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
     wget https://$TARGET/robots.txt -O $LOOT_DIR/web/robots-$TARGET-https.txt 2> /dev/null
     if [ "$NMAP_SCRIPTS" == "1" ]; then
         echo -e "${OKGREEN}=======================================${RESET}"
-        echo -e "$OKRED RUNNING NMAP HTTP SCRIPTS $RESET"
+        echo -e "$OKRED RUNNING NMAP HTTPS SCRIPTS $RESET"
         echo -e "${OKGREEN}=======================================${RESET}"
-        nmap -A -sV -T5 -Pn -p 443 -d --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse --script=http-vuln* $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port443
+        nmap -sS -sC -sV -T5 -Pn -A -O -p 443 --script=/usr/share/nmap/scripts/iis-buffer-overflow.nse $TARGET | tee $LOOT_DIR/output/nmap-$TARGET-port443
         sed -r "s/</\&lh\;/g" $LOOT_DIR/output/nmap-$TARGET-port443 2> /dev/null > $LOOT_DIR/output/nmap-$TARGET-port443.txt 2> /dev/null
         rm -f $LOOT_DIR/output/nmap-$TARGET-port443 2> /dev/null
     fi

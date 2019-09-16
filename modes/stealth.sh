@@ -22,7 +22,6 @@ if [ "$MODE" = "stealth" ]; then
       mkdir $LOOT_DIR/domains 2> /dev/null
       mkdir $LOOT_DIR/screenshots 2> /dev/null
       mkdir $LOOT_DIR/nmap 2> /dev/null
-      mkdir $LOOT_DIR/notes 2> /dev/null
       mkdir $LOOT_DIR/reports 2> /dev/null
       mkdir $LOOT_DIR/scans 2> /dev/null
       mkdir $LOOT_DIR/output 2> /dev/null
@@ -35,34 +34,21 @@ if [ "$MODE" = "stealth" ]; then
   echo ""
   echo -e "$OKORANGE +----=[knock by @Mils]=----+ $RESET"
   echo ""
-  echo -e "$OKRED "   
-  echo -e "$OKRED     ./\."
-  echo -e "$OKRED   ./    '\."
-  echo -e "$OKRED   \.       '\."
-  echo -e "$OKRED     '\.       '\."
-  echo -e "$OKRED        '\.       '\."
-  echo -e "$OKRED           '\.       '\."
-  echo -e "$OKRED           ./           '\."
-  echo -e "$OKRED         ./            ____'\."
-  echo -e "$OKRED       ./                  <  '\."
-  echo -e "$OKRED       \-------\            '>   '\."
-  echo -e "$OKRED         '\=====>        ___<       '\."
-  echo -e "$OKRED        ./-----/             __________'\."
-  echo -e "$OKRED "'       \.------\       _____   ___(_)(_\."\'
-  echo -e "$OKRED          '\=====>          <            ./'"
-  echo -e "$OKRED         ./-----/            '>        ./"
-  echo -e "$OKRED         \.               ___<       ./"
-  echo -e "$OKRED           '\.                     ./"
-  echo -e "$OKRED              '\.                ./"
-  echo -e "$OKRED                 '\.           ./"
-  echo -e "$OKRED                 ./          ./"
-  echo -e "$OKRED               ./          ./"
-  echo -e "$OKRED             ./          ./"
-  echo -e "$OKRED           ./          ./"
-  echo -e "$OKRED         ./          ./"
-  echo -e "$OKRED         \.        ./"
-  echo -e "$OKRED           '\.   ./"
-  echo -e "$OKRED              '\/"
+  echo -e "$OKRED          "
+  echo -e "$OKRED   ____ /\\"
+  echo -e "$OKRED        \ \\"
+  echo -e "$OKRED         \ \\"
+  echo -e "$OKRED     ___ /  \\"
+  echo -e "$OKRED         \   \\"
+  echo -e "$OKRED      === > [ \\"
+  echo -e "$OKRED         /   \ \\"
+  echo -e "$OKRED         \   / /"
+  echo -e "$OKRED      === > [ /"
+  echo -e "$OKRED         /   /"
+  echo -e "$OKRED     ___ \  /"
+  echo -e "$OKRED         / /"
+  echo -e "$OKRED   ____ / /"
+  echo -e "$OKRED        \/$RESET"
   echo -e "$RESET"
   echo -e "$OKORANGE + -- --=[Launching stealth scan: $TARGET $RESET"
   echo -e "$OKGREEN $RESET"
@@ -168,36 +154,6 @@ if [ "$MODE" = "stealth" ]; then
     echo -e "$OKRED DISPLAYING SITE LINKS $RESET"
     echo -e "${OKGREEN}=======================================${RESET}"
     cat $LOOT_DIR/web/websource-http-$TARGET.txt 2> /dev/null | egrep "\"" | cut -d\" -f2 | grep  \/ | sort -u 2> /dev/null | tee $LOOT_DIR/web/weblinks-http-$TARGET.txt 2> /dev/null
-    # if [ "$PASSIVE_SPIDER" == "1" ]; then
-    #   echo -e "${OKGREEN}=======================================${RESET}"
-    #   echo -e "$OKRED RUNNING PASSIVE WEB SPIDER $RESET"
-    #   echo -e "${OKGREEN}=======================================${RESET}"
-    #   if [ "$VERBOSE" == "1" ]; then
-    #     echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2018-22-index?url=*.$TARGET&output=json" | jq -r .url | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null$RESET"
-    #   fi
-    #   curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2018-22-index?url=*.$TARGET&output=json" | jq -r .url | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null
-    # fi
-    # if [ "$WAYBACKMACHINE" == "1" ]; then
-    #   echo -e "${OKGREEN}=======================================${RESET}"
-    #   echo -e "$OKRED FETCHING WAYBACK MACHINE URLS $RESET"
-    #   echo -e "${OKGREEN}=======================================${RESET}"
-    #   if [ "$VERBOSE" == "1" ]; then
-    #     echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN curl -sX GET "http://web.archive.org/cdx/search/cdx?url=*.$TARGET/*&output=text&fl=original&collapse=urlkey" | tee $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null$RESET"
-    #   fi
-    #   curl -sX GET "http://web.archive.org/cdx/search/cdx?url=*.$TARGET/*&output=text&fl=original&collapse=urlkey" | tee $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null
-    # fi
-    # if [ "$BLACKWIDOW" == "1" ]; then
-    #   echo -e "${OKGREEN}=======================================${RESET}"
-    #   echo -e "$OKRED RUNNING ACTIVE WEB SPIDER $RESET"
-    #   echo -e "${OKGREEN}=======================================${RESET}"
-    #   if [ "$VERBOSE" == "1" ]; then
-    #     echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$OKGREEN blackwidow -u http://$TARGET:80 -l 2 $RESET"
-    #   fi
-    #   blackwidow -u http://$TARGET:80 -l 2 -v n
-    #   cat /usr/share/blackwidow/$TARGET*/* > $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-    #   cat $LOOT_DIR/web/waybackurls-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-    #   cat $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null >> $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
-    # fi
     if [ "$WEB_BRUTE" == "1" ]; then
       echo -e "${OKGREEN}=======================================${RESET}"
       echo -e "$OKRED RUNNING FILE/DIRECTORY BRUTE FORCE $RESET"

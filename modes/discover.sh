@@ -9,7 +9,6 @@ if [ "$MODE" = "discover" ]; then
       mkdir $LOOT_DIR/ips 2> /dev/null
       mkdir $LOOT_DIR/screenshots 2> /dev/null
       mkdir $LOOT_DIR/nmap 2> /dev/null
-      mkdir $LOOT_DIR/notes 2> /dev/null
       mkdir $LOOT_DIR/reports 2> /dev/null
       mkdir $LOOT_DIR/output 2> /dev/null
       mkdir $LOOT_DIR/scans 2> /dev/null
